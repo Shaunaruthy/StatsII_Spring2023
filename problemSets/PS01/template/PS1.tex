@@ -99,11 +99,86 @@ $$p(D \leq x) \frac{\sqrt {2\pi}}{x} \sum _{k=1}^{\infty }e^{-(2k-1)^{2}\pi ^{2}
 	# generate test statistic
 	D <- max(abs(empiricalCDF - pnorm(data))) \end{lstlisting}
 
-\vspace{3in}
+\vspace{.5in}
 
+\title{Q1 Answer}
+\item The following function implements the Kolmogorov-Smirnov test
+using a normal distribution as the reference. The null hypothesis states that both samples are from populations with identical distributions. If the P value is small, this indicates that the two groups were sampled from populations with different distributions.
+
+\begin{verbatim}
+library(dplyr)
+set.seed(123)
+data <- rcauchy(1000, location = 1, scale = 1)
+ECDF <- ecdf(data)
+empiricalCDF <- ECDF(data)
+
+D <- max(abs(empiricalCDF-pnorm(data)))
+
+ks_test <- function(x, d){
+  #Run Kolmogorov-Smirnov test on x = data and d = D test statistic.
+  pv <- sum(x >= d)/ nrow(empiricalCDF)
+  print(paste("Asymptotic two-sample Kolmogorov-Smirnov test.
+  D = ", d, "p value ="))
+  print(pv)
+}
+
+Output:
+
+> ks_test(empiricalCDF, D)
+[1] "Asymptotic two-sample Kolmogorov-Smirnov test.\n  #D =  0.361940356685141 
+p value ="
+numeric(0)
+
+\end{verbatim}
+Based on the p value of 0 we reject the null hypothesis that the two samples were drawn from the same distribution where the significance level alpha = .05.
+
+\vspace{.5in}
 \section*{Question 2}
 \noindent Estimate an OLS regression in \texttt{R} that uses the Newton-Raphson algorithm (specifically \texttt{BFGS}, which is a quasi-Newton method), and show that you get the equivalent results to using \texttt{lm}. Use the code below to create your data.
 \vspace{.5cm}
 \lstinputlisting[language=R, firstline=51,lastline=53]{PS1.R} 
+\vspace{1in}
+\title{Q2 Answer}
 
+\item The following code estimates the OLS regression in R using the BFGS method for the Newton-Raphson algorithm.
+
+
+\begin{verbatim}
+library(tidyverse) 
+
+set.seed(123)
+
+datas <- data.frame(x=runif(200,1,10))
+
+datas$y <- 0 + 2.75*datas$x + rnorm(200,0,1.5)
+linear.lik <- function(theta,y,X){
+  n <- nrow(X)
+  k <- ncol(X)
+  beta <- theta [1:k]
+  sigma2 <- theta[k+1]^2
+  e <- y - X%*%beta
+  logl <- -.5*n*log(2*pi)-.5*n*log(sigma2)-((t(e)%*%
+                            e)/(2*sigma2))
+  return(-logl)}
+
+ols_R <- optim(fn=linear.lik, par = c(1,1,1), hessian = TRUE,
+                    y=datas$y, X=cbind(1,datas$x), method = "BFGS")
+
+ols_R$par
+
+Output:
+> ols_R$par
+[1]  0.1398324  2.7265559 -1.4390716
+
+\end{verbatim}
+The lm function was then implemented to demonstrate the same results:
+
+\begin{verbatim}
+    lm(datas$y ~ datas$x)
+Output:
+Coefficients:
+(Intercept)      datas$x  
+     0.1392       2.7267
+     
+\end{verbatim}
 \end{document}
