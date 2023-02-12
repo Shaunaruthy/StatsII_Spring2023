@@ -103,7 +103,7 @@ $$p(D \leq x) \frac{\sqrt {2\pi}}{x} \sum _{k=1}^{\infty }e^{-(2k-1)^{2}\pi ^{2}
 
 \title{Q1 Answer}
 \item The following function implements the Kolmogorov-Smirnov test
-using a normal distribution as the reference. The null hypothesis states that both samples are from populations with identical distributions. If the P value is small, this indicates that the two groups were sampled from populations with different distributions.
+using a normal distribution as the reference. The null hypothesis states that the data comes from a normal distribution.
 
 \begin{verbatim}
 library(dplyr)
@@ -132,7 +132,7 @@ p value ="
 [1] 0.639
 
 \end{verbatim}
-Based on the p value of .639 we fail to reject the null hypothesis that the two samples were drawn from the same distribution at a significance level alpha = .05.
+Based on the p value of .639 we fail to reject the null hypothesis at a significance level alpha = .05.
 
 \vspace{.5in}
 \section*{Question 2}
