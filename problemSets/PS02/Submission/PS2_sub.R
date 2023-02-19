@@ -27,6 +27,8 @@ pkgTest <- function(pkg){
 # ex: stringr
 # lapply(c("stringr"),  pkgTest)
 
+library(tidyverse)
+
 lapply(c(),  pkgTest)
 
 # set wd for current folder
@@ -39,29 +41,62 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 # load data
 load(url("https://github.com/ASDS-TCD/StatsII_Spring2023/blob/main/datasets/climateSupport.RData?raw=true"))
 summary(climateSupport)
+
 #check for na values
 
 sapply(climateSupport,function(x) sum(is.na(x)))
 
-#Convert explanatory variables to scores
-
-
-
-library(tidyverse)
-
+#1. 
 
 levels(climateSupport$countries)
-
-climateSupport$countries <- ifelse(climateSupport$countries == "20 of 192", 1, ifelse(climateSupport$countries == "80 of 192", 2, 3))
-
-summary(climateSupport)
-
-climateSupport$sanctions <- ifelse(climateSupport$sanction == "None", 0, ifelse(climateSupport$sanctions == "5%", 2, 3, 4))
-climateSupport$sanctions <- ifelse(climateSupport$sanctions == "None", 0, ifelse(climateSupport$sanctions == "5%", 1, ifelse(climateSupport$sanctions == "15%", 2, ifelse(climateSupport$sanctions == "20%", 3,4))))
-summary(climateSupport)
 
 model <- glm(choice ~ countries 
              + sanctions,family=binomial(link='logit'),data=climateSupport)
 summary(model)
 
+(exp(-.0057)) / (1 + exp(-.0057))
+
+#The probability that someone will support a policy is .4986.
+
+#Chi Square
+X2 <- 111783 - 11568
+X2
+
+#There are p - 5 predictor variables degrees of freedom
+
+
+(exp(-.0057)) / (1 + exp(-.0057))
+
+
+#2. a: climateSupport$sanctions)
+exp(-.01811)
+
+
+1-.9821 = 17.9%
+
+Policies with 15% sanctions are associated with a 17.9%
+reduction in policy support. 
+
+
+#2b
+
+(-.0057)+(-0.0010)
+
+ep =(exp(-.0057)+(-0.0010))/(1 + exp((-.0057)+(-0.0010)))
+ep
+
+
+#2(c) Would the answers to 2a and 2b potentially change if we included the interaction
+#term in this model? Why?
+
+
+#likelihood ratio test. 
+
+model2 <- glm(choice ~ countries 
+             * sanctions,family=binomial(link='logit'),data=climateSupport)
+summary(model2)
+install.packages('lmtest')
+library(lmtest)
+
+lrtest(model, model2)
 

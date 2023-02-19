@@ -116,6 +116,94 @@
 		%\item
 		%How many iterations did it take to find the maximum likelihood estimates?
 	\end{enumerate}
+
+
+
+ \title{Answer Question 1:} 
+
+\begin{verbatim}
+    
+model <- glm(choice ~ countries 
+             + sanctions,family=binomial(link='logit'),data=climateSupport)
+summary(model)
+\end{verbatim}
+
+ \title{Model Output in R:} 
+
+\begin{verbatim}
+    
+> model <- glm(choice ~ countries 
++              + sanctions,family=binomial(link='logit'),data=climateSupport)
+> summary(model)
+
+Call:
+glm(formula = choice ~ countries + sanctions, family = binomial(link = "logit"), 
+    data = climateSupport)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.4259  -1.1480  -0.9444   1.1505   1.4298  
+
+Coefficients:
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -0.005665   0.021971  -0.258 0.796517    
+countries.L  0.458452   0.038101  12.033  < 2e-16 ***
+countries.Q -0.009950   0.038056  -0.261 0.793741    
+sanctions.L -0.276332   0.043925  -6.291 3.15e-10 ***
+sanctions.Q -0.181086   0.043963  -4.119 3.80e-05 ***
+sanctions.C  0.150207   0.043992   3.414 0.000639 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 11783  on 8499  degrees of freedom
+Residual deviance: 11568  on 8494  degrees of freedom
+AIC: 11580
+
+Number of Fisher Scoring iterations: 4
+
+\end{verbatim}
+
+The null hypothesis states that the explanatory variables of countries
+and sanction levels do not affect the log odds of someone supporting a policy.
+
+
+The intercept value of (-.006) in the output indicates the log odds of individuals supporting a policy when the explanatory variables are 
+at reference level, 0.
+
+\begin{verbatim}
+    
+(exp(-.0057)) / (1 + exp(-.0057))
+
+\end{verbatim}
+The probability that someone will support a policy is .4986.
+
+
+We can see that moving to the highest levels of countries involved in a policy is not
+a statistically significant contribution to the model with a p value of .794.
+The other explanatory variables are significantly associated with the probability of supporting a policy.
+
+
+To get the model chi square value we subtract the residual
+#deviance score from the null deviance score
+
+\begin{verbatim}
+  
+X2 <- 111783 - 11568
+X2
+
+100215
+
+\end{verbatim}
+
+There are p = 5 predictor variables degrees of freedom.
+
+The p value here is less than .5 and therefore we reject the null hypothesis.This indicates that at least one of the explanatory variables are significant in the model at predicting policy support.
+
+	\end{itemize}
+
+	\section*{Instructions}
 	
 	\item
 	If any of the explanatory variables are significant in this model, then:
@@ -124,13 +212,89 @@
 		For the policy in which nearly all countries participate [160 of 192], how does increasing sanctions from 5\% to 15\% change the odds that an individual will support the policy? (Interpretation of a coefficient)
 %		\item
 %		For the policy in which very few countries participate [20 of 192], how does increasing sanctions from 5\% to 15\% change the odds that an individual will support the policy? (Interpretation of a coefficient)
+
+ \title{Answer Question 2 - Part 1:} 
+ 
+\begin{verbatim}
+levels(climateSupport$sanctions)
+    
+exp(-.01811)
+\end{verbatim}
+
+The coefficient is equal to (-.01811) and the p value is <.05, this indicates 
+that this change in sanction levels does influence policy support. The negative value
+indicates that increaseing the sanction
+would decrease the likelihood of someone supporting the policy. 
+
+\begin{verbatim}
+In a policy in which nearly all countries participate, the odds of someone
+supporting a policy with 15% sanctions is .9821 times less than the odds of 
+someone supporting a policy with 5% sanctions. 
+ 
+1-.9821 = 17.9%
+Policies with 15% sanctions are associated with a 17.9% reduction in 
+policy support. 
+
+\end{verbatim}
+
 		\item
 		What is the estimated probability that an individual will support a policy if there are 80 of 192 countries participating with no sanctions? 
+  
+ \title{Answer Question 2 - Part 2:} 
+
+\begin{verbatim}
+(-.0057)+(-0.0010)
+
+ep =(exp(-.0057)+(-0.0010))/(1 + exp((-.0057)+(-0.0010)))
+ep
+
+\end{verbatim}
+
+The estimated probability that an individual will support a policy
+if 80/192 countries are participating and there are no sanctions is .4983.
+
+
 		\item
 		Would the answers to 2a and 2b potentially change if we included the interaction term in this model? Why? 
 		\begin{itemize}
-			\item Perform a test to see if including an interaction is appropriate.
-		\end{itemize}
+			\item Perform a test to see if including an interaction is appropriate.\end{itemize}
+
+  
+\title{Answer Question 2 - Part 3:} 
+
+If there is an interaction term in this model then the distributions of the 
+variables may crossover eachother. This would result in different log likelihood 
+and probability values in relation to policy support.
+
+To see if an interaction model is needed here I have performed a likelihood ratio test. The null hypothesis states that the second model, the interactive model, is a better fit for the data.
+
+\end{itemize}
+
+\begin{verbatim}
+model2 <- glm(choice ~ countries 
+             * sanctions,family=binomial(link='logit'),data=climateSupport)
+summary(model2)
+install.packages('lmtest')
+library(lmtest)
+
+lrtest(model, model2)
+
+Output:
+
+Likelihood ratio test
+
+Model 1: choice ~ countries + sanctions
+Model 2: choice ~ countries * sanctions
+  #Df  LogLik Df  Chisq Pr(>Chisq)
+1   6 -5784.1                     
+2  12 -5781.0  6 6.2928     0.3912
+
+\end{verbatim}
+
+We can see from the output that the p value is not less than .05 so we fail
+to reject the null hypothesis. The interactive predictor variables
+do not offer a significant improvement from the additive model. 
+
 	\end{enumerate}
 	\end{enumerate}
 
