@@ -203,8 +203,6 @@ The p value here is less than .5 and therefore we reject the null hypothesis.Thi
 
 	\end{itemize}
 
-	\section*{Instructions}
-	
 	\item
 	If any of the explanatory variables are significant in this model, then:
 	\begin{enumerate}
@@ -243,15 +241,43 @@ policy support.
  \title{Answer Question 2 - Part 2:} 
 
 \begin{verbatim}
-(-.0057)+(-0.0010)
 
-ep =(exp(-.0057)+(-0.0010))/(1 + exp((-.0057)+(-0.0010)))
-ep
+predicted_data <- with(climateSupport, 
+expand.grid(countries = unique(countries),
+sanctions = unique(sanctions)))
+
+predicted_data <- cbind(predicted_data, 
+predict(model, newdata = predicted_data,
+type = "response",
+se = TRUE))
+
+predicted_data <- within(predicted_data,
+{PredictedProb <- plogis(fit)
+LL <- plogis(fit - (1.96*se.fit))
+UL <- plogis(fit + !1.96*se.fit)
+                         })
+print(predicted_data)
+
+select(predicted_data, countries, sanctions, PredictedProb)
+    countries sanctions PredictedProb
+1   80 of 192       15%     0.6183663
+2  160 of 192       15%     0.6365253
+3   20 of 192       15%     0.5986620
+4   80 of 192      None     0.6261930
+5  160 of 192      None     0.6440148
+6   20 of 192      None     0.6064116
+7   80 of 192        5%     0.6372719
+8  160 of 192        5%     0.6543455
+9   20 of 192        5%     0.6177028
+10  80 of 192       20%     0.6083351
+11 160 of 192       20%     0.6266853
+12  20 of 192       20%     0.5889923
 
 \end{verbatim}
-
 The estimated probability that an individual will support a policy
-if 80/192 countries are participating and there are no sanctions is .4983.
+if 80/192 countries are participating and there are no sanctions is 0.6262.
+
+
 
 
 		\item

@@ -54,6 +54,22 @@ model <- glm(choice ~ countries
              + sanctions,family=binomial(link='logit'),data=climateSupport)
 summary(model)
 
+predicted_data <- with(climateSupport, 
+expand.grid(countries = unique(countries),
+sanctions = unique(sanctions)))
+
+predicted_data <- cbind(predicted_data, 
+predict(model, newdata = predicted_data,
+type = "response",
+se = TRUE))
+
+predicted_data <- within(predicted_data,
+{PredictedProb <- plogis(fit)
+LL <- plogis(fit - (1.96*se.fit))
+UL <- plogis(fit + !1.96*se.fit)
+                         })
+print(predicted_data)
+
 (exp(-.0057)) / (1 + exp(-.0057))
 
 #The probability that someone will support a policy is .4986.
@@ -80,10 +96,18 @@ reduction in policy support.
 
 #2b
 
-(-.0057)+(-0.0010)
+#(-.0057)+(-0.0010)
 
-ep =(exp(-.0057)+(-0.0010))/(1 + exp((-.0057)+(-0.0010)))
-ep
+#ep =(exp(-.0057)+(-0.0010))/(1 + exp((-.0057)+(-0.0010)))
+#ep
+#The estimated probability that an individual will support a policy
+#if 80/192 countries are participating and there are no sanctions is .4983.
+
+select(predicted_data, countries, sanctions, PredictedProb)
+
+#The estimated probability that an individual will support a policy
+#if 80/192 countries are participating and there are no sanctions is 0.6262.
+
 
 
 #2(c) Would the answers to 2a and 2b potentially change if we included the interaction
